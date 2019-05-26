@@ -5,7 +5,10 @@ go_library(
     srcs = ["query.go"],
     importpath = "github.com/smukherj1/bajulate/cmd/query",
     visibility = ["//visibility:private"],
-    deps = ["@com_github_bazelbuild_buildtools//build:go_default_library"],
+    deps = [
+        "//pkg/starlark:go_default_library",
+        "@com_github_bazelbuild_buildtools//build:go_default_library",
+    ],
 )
 
 go_binary(

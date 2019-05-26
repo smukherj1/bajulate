@@ -29,3 +29,9 @@ go_repository(
     commit = "7ccca77a9e6344261d51e95805b4c57729343234",
     importpath = "github.com/bazelbuild/buildtools",
 )
+
+go_repository(
+    name = "com_github_pkg_errors",
+    commit = "27936f6d90f9c8e1145f11ed52ffffbfdb9e0af7",
+    importpath = "github.com/pkg/errors",
+)
