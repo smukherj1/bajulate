@@ -13,7 +13,12 @@ var (
 	filePath = flag.String("f", "", "Path to Starlark file to query for bajulation.")
 )
 
-func visit(e build.Expr, stk []build.Expr) {
+// Visitor is the Starlark AST visitor.
+type Visitor struct {
+	FunctionCalls []*starlark.FunctionCall
+}
+
+func (v *Visitor) visit(e build.Expr, stk []build.Expr) {
 	ce, ok := e.(*build.CallExpr)
 	if !ok {
 		return
@@ -25,6 +30,14 @@ func visit(e build.Expr, stk []build.Expr) {
 		return
 	}
 	log.Printf("Line %d: %v", fc.Expr.Pos.Line, fc)
+	v.FunctionCalls = append(v.FunctionCalls, fc)
+}
+
+func createVisitor() (*Visitor, func(build.Expr, []build.Expr)) {
+	v := new(Visitor)
+	return v, func(e build.Expr, stk []build.Expr) {
+		v.visit(e, stk)
+	}
 }
 
 func main() {
@@ -37,7 +50,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse Starlark file %s: %v", *filePath, err)
 	}
+	v, visit := createVisitor()
 	for _, s := range f.Stmt {
 		build.Walk(s, visit)
 	}
+	log.Printf("Found %d function calls.", len(v.FunctionCalls))
 }
